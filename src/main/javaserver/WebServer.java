@@ -41,10 +41,9 @@ public class WebServer {
                 Socket clientSocket = serverSocket.accept();
                 WebClient client = new WebClient(clientId, clientSocket);
 
-                //delete for formal logging later.
                 System.out.println("Client connected: " + clientId);
 
-                threadPool.submit(client);
+                threadPool.execute(client);
                 clientId++;
             } catch (IOException ex) {
                 System.err.println(ex.getMessage());
