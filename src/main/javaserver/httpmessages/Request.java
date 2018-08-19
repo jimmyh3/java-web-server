@@ -33,7 +33,10 @@ public class Request {
             getSetHeaders(clientSocketIn);
             getSetBody(_clientSocket.getInputStream());
         } catch (BadRequestException | IOException | ArrayIndexOutOfBoundsException ex) {
-            System.err.println(ex.getMessage());
+            System.err.println("Bad Request: " + ex.getMessage());
+            uri = "/";
+            verb = "BAD";
+            httpVersion = "HTTP/1.1";
         }
     }
 
@@ -63,8 +66,6 @@ public class Request {
     }
 
     private void getSetBody(InputStream clientSocketIn) throws IOException {
-        byte readChar = 0;
-
         if (headers.containsKey("Content-Length")) {
             int contentLength = Integer.parseInt(headers.get("Content-Length").trim());
 
@@ -74,4 +75,15 @@ public class Request {
         }
     }
 
+    public String getURI() {
+        return uri;
+    }
+
+    public String getVerb() {
+        return verb;
+    }
+
+    public String getHttpVersion() {
+        return httpVersion;
+    }
 }
