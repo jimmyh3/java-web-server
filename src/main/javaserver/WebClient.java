@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import main.javaserver.httpmessages.Request;
+
 public class WebClient implements Runnable {
 
     private int id;
@@ -31,17 +33,8 @@ public class WebClient implements Runnable {
     @Override
     public void run() {
         boolean clientIsActive = true;
-
-        while (clientIsActive) {
-            try {
-                String inputLine = "";
-
-                while ((inputLine = clientSocketIn.readLine()) != null) {
-                    System.out.println(inputLine);
-                }
-            } catch (IOException ex) {
-                // TODO: failure here indicates bad request from client.
-            }
-        }
+        
+        Request request = new Request(clientSocket);
+        
     }
 }
