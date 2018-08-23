@@ -29,8 +29,8 @@ public class HttpdConf extends ConfigurationReader {
             readLine = readLine.trim();
 
             // Ignore comment lines
-            if (readLine.charAt(0) != '#') {
-                String[] configKeyVal = readLine.split(" ", 2);
+            if (!readLine.equals("") && readLine.charAt(0) != '#') {
+                String[] configKeyVal = readLine.split("\\s+", 2);
                 String   configKey = configKeyVal[0];
                 String   configVal = configKeyVal[1];
 
@@ -44,7 +44,7 @@ public class HttpdConf extends ConfigurationReader {
     private void storeHandleConfigAliasTypes(String configKey, String configVal) {
         if (configKey.equals("Alias") || configKey.equals("ScriptAlias")) {
             Map<String, String> aliasTypeMap = (configKey.equals("Alias")) ? aliases : scriptedAliases;
-            String[] aliasDirectoryPair = configVal.split(" ", 2);
+            String[] aliasDirectoryPair = configVal.split("\\s+", 2);
             String alias = aliasDirectoryPair[0];
             String directory = aliasDirectoryPair[1];
 
@@ -77,7 +77,7 @@ public class HttpdConf extends ConfigurationReader {
         }
 
         if (valueStr != null) {
-            valueSplit = valueStr.split(" ");
+            valueSplit = valueStr.trim().split("\\s+");
         }
 
         return valueSplit;
