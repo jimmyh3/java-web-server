@@ -30,31 +30,33 @@ public class HttpdConf extends ConfigurationReader {
 
             // Ignore comment lines
             if (!readLine.equals("") && readLine.charAt(0) != '#') {
-                String[] configKeyVal = readLine.split("\\s+", 2);
-                String   configKey = configKeyVal[0];
-                String   configVal = configKeyVal[1];
+                String[] configKeyVal = parseLine(readLine);
 
-                storeHandleConfigAliasTypes(configKey, configVal);
-                storeHandleConfigDefaultTypes(configKey, configVal);
+                storeHandleConfigAliasTypes(configKeyVal);
+                storeHandleConfigDefaultTypes(configKeyVal);
             }
         }
 
     }
 
-    private void storeHandleConfigAliasTypes(String configKey, String configVal) {
+    private void storeHandleConfigAliasTypes(String[] configKeyVal) {
+        String configKey = configKeyVal[0];
+
         if (configKey.equals("Alias") || configKey.equals("ScriptAlias")) {
             Map<String, String> aliasTypeMap = (configKey.equals("Alias")) ? aliases : scriptedAliases;
-            String[] aliasDirectoryPair = configVal.split("\\s+", 2);
-            String alias = aliasDirectoryPair[0];
-            String directory = aliasDirectoryPair[1];
+            String alias = configKeyVal[1];
+            String directory = configKeyVal[2];
 
             aliasTypeMap.put(alias, directory);
         }
     }
 
-    private void storeHandleConfigDefaultTypes(String configKey, String configVal) {
-        if (!configKey.equals("Alias") && !configKey.equals("ScriptAlias")) {
-            settings.put(configKey, configVal);
+    private void storeHandleConfigDefaultTypes(String[] configKeyVal) {
+        String configFieldName = configKeyVal[0];
+
+        if (!configFieldName.equals("Alias") && !configFieldName.equals("ScriptAlias")) {
+            String configFieldValue = configKeyVal[1];
+            settings.put(configFieldName, configFieldValue);
         }
     }
     
@@ -77,7 +79,7 @@ public class HttpdConf extends ConfigurationReader {
         }
 
         if (valueStr != null) {
-            valueSplit = valueStr.trim().split("\\s+");
+            valueSplit = parseLine(valueStr.trim());
         }
 
         return valueSplit;
