@@ -2,12 +2,8 @@ package main.javaserver.confreaders;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Htaccess extends ConfigurationReader {
     
@@ -56,17 +52,6 @@ public class Htaccess extends ConfigurationReader {
             }
         }
 
-    }
-
-    private String[] parseLine(String readLine) {
-        List<String> matches = new ArrayList<>();
-
-        Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(readLine);
-        while (m.find()) {
-            matches.add(m.group(1));
-        }
-
-        return matches.toArray(new String[0]);
     }
 
     private Htpassword initializeHtpassword(String htpasswordFileName) {
