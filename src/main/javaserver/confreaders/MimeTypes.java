@@ -39,7 +39,7 @@ public class MimeTypes extends ConfigurationReader {
      * @param readLine String line read from mime type file.
      */
     private void storeHandleMimeTypes(Map<String, String> _mimeTypes, String readLine) {
-        String[] readLineSplit = readLine.split("\\s+");
+        String[] readLineSplit = parseLine(readLine);
         String mimeType = readLineSplit[0];
 
         for (int i = 1; i < readLineSplit.length; i++) {
