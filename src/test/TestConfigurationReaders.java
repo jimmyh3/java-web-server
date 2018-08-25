@@ -41,8 +41,8 @@ public class TestConfigurationReaders {
     
     public static void main(String[] args) throws FileNotFoundException, IOException {
         TestConfigurationReaders testConfigurationReaders = new TestConfigurationReaders();
-        //testConfigurationReaders.testHttpConf("src/main/javaserver/conf/httpd.conf");
-        //testConfigurationReaders.testMimeTypes("src/main/javaserver/conf/mime.types");
+        testConfigurationReaders.testHttpConf("src/main/javaserver/conf/httpd.conf");
+        testConfigurationReaders.testMimeTypes("src/main/javaserver/conf/mime.types");
         testConfigurationReaders.testHtaccess("src/main/javaserver/conf/.htaccess");
         //String str = "AuthUserFile \"/Users/jrob/workspace/server/public_html/.htpasswd\"";
     }
