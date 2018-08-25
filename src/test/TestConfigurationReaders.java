@@ -2,6 +2,9 @@ package test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import main.javaserver.confreaders.Htaccess;
 import main.javaserver.confreaders.HttpdConf;
@@ -39,7 +42,8 @@ public class TestConfigurationReaders {
     public static void main(String[] args) throws FileNotFoundException, IOException {
         TestConfigurationReaders testConfigurationReaders = new TestConfigurationReaders();
         //testConfigurationReaders.testHttpConf("src/main/javaserver/conf/httpd.conf");
-        testConfigurationReaders.testMimeTypes("src/main/javaserver/conf/mime.types");
+        //testConfigurationReaders.testMimeTypes("src/main/javaserver/conf/mime.types");
         testConfigurationReaders.testHtaccess("src/main/javaserver/conf/.htaccess");
+        //String str = "AuthUserFile \"/Users/jrob/workspace/server/public_html/.htpasswd\"";
     }
 }

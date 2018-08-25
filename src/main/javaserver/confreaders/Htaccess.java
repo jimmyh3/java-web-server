@@ -2,8 +2,12 @@ package main.javaserver.confreaders;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Htaccess extends ConfigurationReader {
     
@@ -36,10 +40,10 @@ public class Htaccess extends ConfigurationReader {
             readLine = readLine.trim();
 
             if (readLine.charAt(0) != '#') {
-                String[] readLineSplit = readLine.split("\\s+");
+                String[] readLineSplit = parseLine(readLine);
                 String fieldName = readLineSplit[0];
                 String fieldValue = readLineSplit[1];
-
+                    
                 if (fieldName.equals("AuthUserFile")) {
                     userFile = initializeHtpassword(fieldValue);
                 } else if (fieldName.equals("AuthType")) {
@@ -54,9 +58,20 @@ public class Htaccess extends ConfigurationReader {
 
     }
 
+    private String[] parseLine(String readLine) {
+        List<String> matches = new ArrayList<>();
+
+        Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(readLine);
+        while (m.find()) {
+            matches.add(m.group(1));
+        }
+
+        return matches.toArray(new String[0]);
+    }
+
     private Htpassword initializeHtpassword(String htpasswordFileName) {
         //TODO: Implement this.
-
+        System.out.println("Require implementation: Htaccess.initializeHtpassword(): " + htpasswordFileName);
         return null;
     }
 
