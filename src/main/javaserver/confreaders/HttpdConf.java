@@ -3,21 +3,34 @@ package main.javaserver.confreaders;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HttpdConf extends ConfigurationReader {
 
-    private Map<String, String> settings;
+    private Map<String, String> otherDirectives;
+    private String serverRoot;
+    private int listen;
+    private String documentRoot;
+    private String logFile;
     private Map<String, String> aliases;
     private Map<String, String> scriptedAliases;
+    private String accessFileName;
+    private List<String> directoryIndex;
 
     public HttpdConf (String fileName) throws FileNotFoundException {
         super(fileName);
 
-        settings = new HashMap<>();
+        serverRoot = null;
+        listen = 8080;
+        documentRoot = null;
+        logFile = null;
         aliases = new HashMap<>();
         scriptedAliases = new HashMap<>();
+        accessFileName = ".htaccess";
+        directoryIndex = new ArrayList<>();
+        otherDirectives = new HashMap<>();
     }
 
 
@@ -28,38 +41,39 @@ public class HttpdConf extends ConfigurationReader {
         while ((readLine = fileReader.readLine()) != null) {
             readLine = readLine.trim();
 
-            // Ignore comment lines
             if (!readLine.equals("") && readLine.charAt(0) != '#') {
-                String[] configKeyVal = parseLine(readLine);
-
-                storeHandleConfigAliasTypes(configKeyVal);
-                storeHandleConfigDefaultTypes(configKeyVal);
+                storeHandleConfigDirective(parseLine(readLine));
             }
         }
-
     }
 
-    private void storeHandleConfigAliasTypes(String[] configKeyVal) {
-        String configKey = configKeyVal[0];
-
-        if (configKey.equals("Alias") || configKey.equals("ScriptAlias")) {
-            Map<String, String> aliasTypeMap = (configKey.equals("Alias")) ? aliases : scriptedAliases;
-            String alias = configKeyVal[1];
-            String directory = configKeyVal[2];
-
-            aliasTypeMap.put(alias, directory);
+    private void storeHandleConfigDirective(String[] configKeyVal) {
+        String directive = configKeyVal[0];
+        
+        switch (directive) {
+            case "ServerRoot":
+                serverRoot = configKeyVal[1];
+            case "Listen":
+                listen = Integer.parseInt(configKeyVal[1]);
+            case "DocumentRoot":
+                documentRoot = configKeyVal[1];
+            case "LogFile":
+                logFile = configKeyVal[1];
+            case "Alias":
+                aliases.put(configKeyVal[1], configKeyVal[2]);
+            case "ScriptAlias":
+                scriptedAliases.put(configKeyVal[1], configKeyVal[2]);
+            case "AccessFileName":
+                accessFileName = configKeyVal[1];
+            case "DirectoryIndex":
+                for (int i = 1; i < configKeyVal.length; i++) {
+                    directoryIndex.add(configKeyVal[i]);
+                }
+            default:
+                otherDirectives.put(directive, configKeyVal[1]);
         }
     }
 
-    private void storeHandleConfigDefaultTypes(String[] configKeyVal) {
-        String configFieldName = configKeyVal[0];
-
-        if (!configFieldName.equals("Alias") && !configFieldName.equals("ScriptAlias")) {
-            String configFieldValue = configKeyVal[1];
-            settings.put(configFieldName, configFieldValue);
-        }
-    }
-    
     /**
      * @param configFieldName The field name to look for in order to obtain its value.
      * @return null or a string array of values mapped to the given field name. Null indicates
@@ -70,9 +84,7 @@ public class HttpdConf extends ConfigurationReader {
         String valueStr = null;
         String[] valueSplit = null;
 
-        if (settings.containsKey(configFieldName)) {
-            valueStr = settings.get(configFieldName);
-        } else if (aliases.containsKey(configFieldName)) {
+        if (aliases.containsKey(configFieldName)) {
             valueStr = aliases.get(configFieldName);
         } else if (scriptedAliases.containsKey(configFieldName)) {
             valueStr = scriptedAliases.get(configFieldName);
