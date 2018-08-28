@@ -17,7 +17,7 @@ public class HttpdConf extends ConfigurationReader {
     private Map<String, String> aliases;
     private Map<String, String> scriptedAliases;
     private String accessFileName;
-    private List<String> directoryIndex;
+    private List<String> directoryIndexes;
 
     public HttpdConf (String fileName) throws FileNotFoundException {
         super(fileName);
@@ -29,10 +29,19 @@ public class HttpdConf extends ConfigurationReader {
         aliases = new HashMap<>();
         scriptedAliases = new HashMap<>();
         accessFileName = ".htaccess";
-        directoryIndex = new ArrayList<>();
+        directoryIndexes = new ArrayList<>();
         otherDirectives = new HashMap<>();
     }
 
+    public String getServerRoot() { return serverRoot; }
+    public int getListenPort() { return listen; }
+    public String getDocumentRoot() { return documentRoot; }
+    public String getLogFile() { return logFile; }
+    public String getAlias(String alias) { return aliases.get(alias); }
+    public String getScriptedAlias(String scriptedAlias) { return scriptedAliases.get(scriptedAlias); }
+    public String getAccessFileName() { return accessFileName; }
+    public List<String> getDirectoryIndexes() { return directoryIndexes; }
+    public String getOtherDirectives(String directive) { return otherDirectives.get(directive); }
 
     @Override
     public void load() throws IOException {
@@ -67,33 +76,10 @@ public class HttpdConf extends ConfigurationReader {
                 accessFileName = configKeyVal[1];
             case "DirectoryIndex":
                 for (int i = 1; i < configKeyVal.length; i++) {
-                    directoryIndex.add(configKeyVal[i]);
+                    directoryIndexes.add(configKeyVal[i]);
                 }
             default:
                 otherDirectives.put(directive, configKeyVal[1]);
         }
-    }
-
-    /**
-     * @param configFieldName The field name to look for in order to obtain its value.
-     * @return null or a string array of values mapped to the given field name. Null indicates
-     * that the field name does not exist in the file. Should it return a string array, the caller
-     * must check the length of the array to check if the number of arguments match, if needed.
-     */
-    public String[] getConfigValue(String configFieldName) {
-        String valueStr = null;
-        String[] valueSplit = null;
-
-        if (aliases.containsKey(configFieldName)) {
-            valueStr = aliases.get(configFieldName);
-        } else if (scriptedAliases.containsKey(configFieldName)) {
-            valueStr = scriptedAliases.get(configFieldName);
-        }
-
-        if (valueStr != null) {
-            valueSplit = parseLine(valueStr.trim());
-        }
-
-        return valueSplit;
     }
 }
