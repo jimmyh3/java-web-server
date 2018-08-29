@@ -38,7 +38,9 @@ public class HttpdConf extends ConfigurationReader {
     public String getDocumentRoot() { return documentRoot; }
     public String getLogFile() { return logFile; }
     public String getAlias(String alias) { return aliases.get(alias); }
+    public Map<String, String> getAliasMap() { return aliases; }
     public String getScriptedAlias(String scriptedAlias) { return scriptedAliases.get(scriptedAlias); }
+    public Map<String, String> getScriptAliasMap() { return scriptedAliases; }
     public String getAccessFileName() { return accessFileName; }
     public List<String> getDirectoryIndexes() { return directoryIndexes; }
     public String getOtherDirectives(String directive) { return otherDirectives.get(directive); }
