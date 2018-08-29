@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HttpdConf extends ConfigurationReader {
@@ -64,22 +65,30 @@ public class HttpdConf extends ConfigurationReader {
         switch (directive) {
             case "ServerRoot":
                 serverRoot = configKeyVal[1];
+                break;
             case "Listen":
                 listen = Integer.parseInt(configKeyVal[1]);
+                break;
             case "DocumentRoot":
                 documentRoot = configKeyVal[1];
+                break;
             case "LogFile":
                 logFile = configKeyVal[1];
+                break;
             case "Alias":
                 aliases.put(configKeyVal[1], configKeyVal[2]);
+                break;
             case "ScriptAlias":
                 scriptedAliases.put(configKeyVal[1], configKeyVal[2]);
+                break;
             case "AccessFileName":
                 accessFileName = configKeyVal[1];
+                break;
             case "DirectoryIndex":
                 for (int i = 1; i < configKeyVal.length; i++) {
                     directoryIndexes.add(configKeyVal[i]);
                 }
+                break;
             default:
                 otherDirectives.put(directive, configKeyVal[1]);
         }
