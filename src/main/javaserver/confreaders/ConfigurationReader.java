@@ -25,7 +25,7 @@ public abstract class ConfigurationReader {
 
         Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(readLine);
         while (m.find()) {
-            matches.add(m.group(1).replace("\"", ""));
+            matches.add(m.group(1).replace("\"", "").trim());
         }
 
         return matches.toArray(new String[0]);
