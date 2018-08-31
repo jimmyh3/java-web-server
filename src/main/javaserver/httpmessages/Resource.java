@@ -19,6 +19,7 @@ public class Resource {
 	private String setAbsolutePath(String uri, HttpdConf httpdConf) {
 		uri = resolveAliases(uri, httpdConf);
 		uri = resolveDirectoryIndexes(uri, httpdConf);
+		isProtected = resolveIsProtected(uri, httpdConf);
 
 		return uri;
 	}
@@ -36,6 +37,20 @@ public class Resource {
 			if ((hasTrailSlashAlias && hasTrailSlashRealDir) || (!hasTrailSlashAlias && !hasTrailSlashRealDir)) {
 				if (uri.matches(".*"+alias+".*")) {
 					uri = uri.replace(alias, realDir);
+				}
+			}
+		}
+
+		for (Map.Entry<String, String> scriptAliasSet : scriptAliasMap.entrySet()) {
+			String scriptAlias = scriptAliasSet.getKey();
+			String realDir = scriptAliasSet.getValue();
+			boolean hasTrailSlashAlias = scriptAlias.charAt(scriptAlias.length()-1) == '/';
+			boolean hasTrailSlashRealDir = realDir.charAt(realDir.length()-1) == '/';
+
+			if ((hasTrailSlashAlias && hasTrailSlashRealDir) || (!hasTrailSlashAlias && !hasTrailSlashRealDir)) {
+				if (uri.matches(".*"+scriptAlias+".*")) {
+					uri = uri.replace(scriptAlias, realDir);
+					isScript = true;
 				}
 			}
 		}
@@ -60,18 +75,29 @@ public class Resource {
 		return uri;
 	}
 
+	private boolean resolveIsProtected(String uri, HttpdConf httpdConf) {
+		String accessFileName = httpdConf.getAccessFileName();
+		String uriTotal = "";
+		boolean isProtected = false;
+
+		for (String uriPiece : uri.split("/")) {
+			uriTotal += uriPiece + "/";
+
+			File file = new File(uriTotal + accessFileName);
+			if (file.isFile()) {
+				isProtected = true;
+				break;
+			}
+		}
+
+		return isProtected;
+	}
+
 	/**
 	 * @return the isProtected
 	 */
 	public boolean isProtected() {
 		return isProtected;
-	}
-
-	/**
-	 * @param isProtected the isProtected to set
-	 */
-	public void setIsProtected(boolean isProtected) {
-		this.isProtected = isProtected;
 	}
 
 	/**
@@ -82,30 +108,10 @@ public class Resource {
 	}
 
 	/**
-	 * @param isScript the isScript to set
-	 */
-	public void setIsScript(boolean isScript) {
-		this.isScript = isScript;
-	}
-
-	/**
 	 * @return the absolutePath
 	 */
 	public String getAbsolutePath() {
 		return absolutePath;
 	}
-
-	/**
-	 * @param absolutePath the absolutePath to set
-	 */
-	public void setAbsolutePath(String absolutePath) {
-		this.absolutePath = absolutePath;
-	}
-
-    /*
-    public Resource (String _uri, HttpdConf _httpConf) {
-
-    }
-    */
 
 }
