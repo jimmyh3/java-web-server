@@ -75,6 +75,10 @@ public class Request {
         }
     }
 
+    public String getHeader(String fieldName) {
+        return headers.get(fieldName);
+    }
+
     public String getURI() {
         return uri;
     }
