@@ -58,6 +58,10 @@ public class Response {
 
 		bfo.flush();
 	}
+
+	public void addHeaderValue(String header, String value) {
+		headers.put(header, value);
+	}
 	
 	private String getResponseHeaderString(Map<String, String> _headers) {
 		String headerStr = "";
