@@ -17,6 +17,10 @@ public class Htaccess extends ConfigurationReader {
     public Htaccess(String fileName) throws FileNotFoundException {
         super(fileName);
     }
+    
+    public Htpassword getUserFile() {
+        return userFile;
+    }
 
     public String getAuthType() {
         return authType;
@@ -57,7 +61,6 @@ public class Htaccess extends ConfigurationReader {
     }
 
     private Htpassword initializeHtpassword(String htpasswordFileName) {
-        //TODO: Implement this.
         Htpassword htpassword = new Htpassword(htpasswordFileName);
         htpassword.load();
         
