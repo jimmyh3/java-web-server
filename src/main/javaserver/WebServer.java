@@ -3,9 +3,13 @@ package main.javaserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import main.javaserver.confreaders.Htaccess;
 
 public class WebServer {
 
@@ -13,6 +17,7 @@ public class WebServer {
     private int clientId = 0;
     private ServerSocket serverSocket;
     private ExecutorService threadPool;
+    public static Map<String, Htaccess> accessFiles = new HashMap<>();
 
     public WebServer(int _port) {
         init(_port);
