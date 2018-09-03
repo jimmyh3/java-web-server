@@ -17,6 +17,26 @@ public class WebServer {
     private int clientId = 0;
     private ServerSocket serverSocket;
     private ExecutorService threadPool;
+    public static Map<String, Htaccess> accessFiles = new HashMap<>();
+
+    /**
+     * Retrieve the Htaccess based on the given filepath(name included).
+     * @param accessFile The Htaccess filepath to retrieve.
+     * @return The Htaccess file or null if it does not exist in the internal hash map.
+     * @see Htaccess
+     */
+    public static Htaccess getHtaccess(String accessFile) {
+        return accessFiles.get(accessFile);
+    }
+
+    public static void addInitializeHtaccess(String accessFile) {
+        if (accessFiles.get(accessFile)) return;
+        
+        Htaccess htaccess = new Htaccess(accessFile);
+        htaccess.load();
+
+        accessFiles.put(accessFile, htaccess);
+    }
 
     public WebServer(int _port) {
         init(_port);
