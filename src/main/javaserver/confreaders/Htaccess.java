@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import main.javaserver.confreaders.Htpassword;
+
 public class Htaccess extends ConfigurationReader {
     
     private Htpassword userFile;
@@ -56,8 +58,10 @@ public class Htaccess extends ConfigurationReader {
 
     private Htpassword initializeHtpassword(String htpasswordFileName) {
         //TODO: Implement this.
-        System.out.println("Require implementation: Htaccess.initializeHtpassword(): " + htpasswordFileName);
-        return null;
+        Htpassword htpassword = new Htpassword(htpasswordFileName);
+        htpassword.load();
+        
+        return htpassword;
     }
 
 }
