@@ -17,7 +17,6 @@ public class WebServer {
     private int clientId = 0;
     private ServerSocket serverSocket;
     private ExecutorService threadPool;
-    public static Map<String, Htaccess> accessFiles = new HashMap<>();
 
     public WebServer(int _port) {
         init(_port);

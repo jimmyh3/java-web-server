@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import main.javaserver.WebServer;
 import main.javaserver.confreaders.HttpdConf;
 
 public class Resource {
@@ -11,6 +12,7 @@ public class Resource {
     private String absolutePath;
     private boolean isScript;
     private boolean isProtected;
+	private String accessFilePath;
 
     public Resource (String uri, HttpdConf httpdConf) {
         absolutePath = setAbsolutePath(uri, httpdConf);
@@ -86,11 +88,16 @@ public class Resource {
 			File file = new File(uriTotal + accessFileName);
 			if (file.isFile()) {
 				isProtected = true;
+				accessFilePath = uriTotal + accessFileName;
 				break;
 			}
 		}
 
 		return isProtected;
+	}
+
+	public String getAccessFilePath() {
+		return accessFilePath;
 	}
 
 	/**
