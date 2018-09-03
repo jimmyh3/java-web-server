@@ -89,6 +89,7 @@ public class Resource {
 			if (file.isFile()) {
 				isProtected = true;
 				accessFilePath = uriTotal + accessFileName;
+				WebServer.addInitializeHtaccess(uriTotal + accessFileName);
 				break;
 			}
 		}
