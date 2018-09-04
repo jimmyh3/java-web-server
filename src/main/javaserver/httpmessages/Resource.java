@@ -1,6 +1,8 @@
 package main.javaserver.httpmessages;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -14,18 +16,25 @@ public class Resource {
     private boolean isProtected;
 	private String accessFilePath;
 
-    public Resource (String uri, HttpdConf httpdConf) {
-        absolutePath = setAbsolutePath(uri, httpdConf);
+    public Resource (String uri, HttpdConf httpdConf) throws FileNotFoundException, IOException {
+		absolutePath = setAbsolutePath(uri, httpdConf);
 	}
 
-	private String setAbsolutePath(String uri, HttpdConf httpdConf) {
+	private String setAbsolutePath(String uri, HttpdConf httpdConf) throws FileNotFoundException, IOException {
 		uri = resolveAliases(uri, httpdConf);
+		uri = resolveRelativeURI(uri, httpdConf);
 		uri = resolveDirectoryIndexes(uri, httpdConf);
 		isProtected = resolveIsProtected(uri, httpdConf);
 
 		return uri;
 	}
 
+	/**
+	 * Handles resolving httpd.conf Alias and ScriptAlias directives by replacing the mapped values over the matched substrings within the URI.
+	 * @param uri The URI potentially containing aliases to be mapped to official directories.
+	 * @param httpdConf The HttpdConf object containing alias mappings to use.
+	 * @return The official URI to a resource within the server.
+	 */
 	private String resolveAliases(String uri, HttpdConf httpdConf) {
 		Map<String, String> aliasMap = httpdConf.getAliasMap();
 		Map<String, String> scriptAliasMap = httpdConf.getScriptAliasMap();
@@ -60,9 +69,15 @@ public class Resource {
 		return uri;
 	}
 
+	private String resolveRelativeURI(String uri, HttpdConf httpdConf) {
+		if (uri.charAt(0) != '/') return uri;
+		String root = (httpdConf.getDocumentRoot() == null) ? httpdConf.getServerRoot() : httpdConf.getDocumentRoot();
+
+		return root + uri;
+	}
+
 	private String resolveDirectoryIndexes(String uri, HttpdConf httpdConf) {
 		if (uri.charAt(uri.length()-1) != '/') return uri;
-		if (uri.equals("/")) uri = httpdConf.getDocumentRoot();
 
 		List<String> directoryIndexes = httpdConf.getDirectoryIndexes();
 
@@ -77,7 +92,7 @@ public class Resource {
 		return uri;
 	}
 
-	private boolean resolveIsProtected(String uri, HttpdConf httpdConf) {
+	private boolean resolveIsProtected(String uri, HttpdConf httpdConf) throws FileNotFoundException, IOException {
 		String accessFileName = httpdConf.getAccessFileName();
 		String uriTotal = "";
 		boolean isProtected = false;
