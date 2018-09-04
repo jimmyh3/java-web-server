@@ -10,6 +10,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import main.javaserver.confreaders.Htaccess;
+import main.javaserver.confreaders.HttpdConf;
+import main.javaserver.confreaders.MimeTypes;
 
 public class WebServer {
 
@@ -17,6 +19,8 @@ public class WebServer {
     private int clientId = 0;
     private ServerSocket serverSocket;
     private ExecutorService threadPool;
+    private HttpdConf httpdConf;
+    private MimeTypes mimeTypes;
     public static Map<String, Htaccess> accessFiles = new HashMap<>();
 
     /**
@@ -51,6 +55,8 @@ public class WebServer {
             port = _port;
             serverSocket = new ServerSocket(port);
             threadPool = Executors.newCachedThreadPool();
+            httpdConf = new HttpdConf("src/main/javaserver/conf/httpd.conf");
+            mimeTypes = new MimeTypes("src/main/javaserver/conf/mime.types");
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
@@ -63,7 +69,7 @@ public class WebServer {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                WebClient client = new WebClient(clientId, clientSocket);
+                WebClient client = new WebClient(clientId, clientSocket, httpdConf, mimeTypes);
 
                 System.out.println("Client connected: " + clientId);
 

@@ -9,28 +9,32 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 
+import main.javaserver.confreaders.HttpdConf;
+import main.javaserver.confreaders.MimeTypes;
 import main.javaserver.httpmessages.Request;
+import main.javaserver.httpmessages.Resource;
 import main.javaserver.httpmessages.Response;
+import main.javaserver.httpmessages.ResponseFactory;
 
 public class WebClient implements Runnable {
 
     private int id;
     private Socket clientSocket;
+    private HttpdConf httpdConf;
+    private MimeTypes mimeTypes;
 
-    public WebClient(int _id, Socket _clientSocket) {
-        init(_id, _clientSocket);
-    }
-
-    private void init(int _id, Socket _clientSocket) {
+    public WebClient(int _id, Socket _clientSocket, HttpdConf _httpdConf, MimeTypes _mimeTypes) {
         id = _id;
         clientSocket = _clientSocket;
+        httpdConf = _httpdConf;
+        mimeTypes = _mimeTypes;
     }
 
     @Override
     public void run() {
         Request request = new Request(clientSocket);
         Response response = testGetResponse();
-
+        
         try {
             response.send(clientSocket.getOutputStream());
         } catch (IOException ex) {
