@@ -33,6 +33,14 @@ public class WebClient implements Runnable {
         isRunning = true;
     }
  
+    /**
+     * Get the ID associated with this web client.
+     * @return the id.
+     */
+    public int getId() {
+        return id;
+    }
+
     @Override
     public void run() {
         while (isRunning) {
