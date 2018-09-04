@@ -60,7 +60,7 @@ public class Htaccess extends ConfigurationReader {
 
     }
 
-    private Htpassword initializeHtpassword(String htpasswordFileName) {
+    private Htpassword initializeHtpassword(String htpasswordFileName) throws FileNotFoundException, IOException {
         Htpassword htpassword = new Htpassword(htpasswordFileName);
         htpassword.load();
         
