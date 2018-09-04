@@ -49,7 +49,15 @@ public class MimeTypes extends ConfigurationReader {
         }
     }
 
-    public String getMimeType(String fileExtension) {
+    /**
+     * Returns the mime type associated with the file type.
+     * @param fileName The file to determine the mime type of.
+     * @return The mime type mapped to this file.
+     */
+    public String getMimeType(String fileName) {
+        String[] fileSplit = fileName.split("\\.");
+        String fileExtension = fileSplit[fileSplit.length-1];
+        
         return mimeTypes.get(fileExtension);
     }
 
