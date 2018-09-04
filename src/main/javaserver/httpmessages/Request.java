@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import main.javaserver.httpmessages.BadRequestException;
 
 public class Request {
 
@@ -41,7 +42,16 @@ public class Request {
     }
 
     private void getSetStartLine(BufferedReader clientSocketIn) throws BadRequestException, IOException {
-        String startLine = clientSocketIn.readLine();
+        String startLine = null;
+        
+        do {
+            startLine = clientSocketIn.readLine();
+        } while (startLine == null || startLine.isEmpty());
+
+        getSetStartLine(startLine);
+    }
+
+    private void getSetStartLine(String startLine) throws BadRequestException, IOException {
         String[] startLineSplit = startLine.split(" ");
 
         if (startLineSplit.length != 3)  {
