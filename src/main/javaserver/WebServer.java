@@ -1,5 +1,6 @@
 package main.javaserver;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,8 +34,8 @@ public class WebServer {
         return accessFiles.get(accessFile);
     }
 
-    public static void addInitializeHtaccess(String accessFile) {
-        if (accessFiles.get(accessFile)) return;
+    public static void addInitializeHtaccess(String accessFile) throws FileNotFoundException, IOException {
+        if (accessFiles.get(accessFile) != null) return;
         
         Htaccess htaccess = new Htaccess(accessFile);
         htaccess.load();
@@ -57,6 +58,9 @@ public class WebServer {
             threadPool = Executors.newCachedThreadPool();
             httpdConf = new HttpdConf("src/main/javaserver/conf/httpd.conf");
             mimeTypes = new MimeTypes("src/main/javaserver/conf/mime.types");
+
+            httpdConf.load();
+            mimeTypes.load();
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
