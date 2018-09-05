@@ -16,7 +16,6 @@ public class Response {
 	private String reasonPhrase;
 	private Map<String, String> headers;
 	private List<Byte> body;
-    private Resource resource;
 
     public Response() {
 		httpVersion = "HTTP/1.1";
