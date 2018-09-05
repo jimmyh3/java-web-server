@@ -47,7 +47,7 @@ public class WebClient implements Runnable {
             try {
                 Request request = new Request(clientSocket);
                 Resource resource = new Resource(request.getURI(), httpdConf);
-                Response response = ResponseFactory.getResponse(request, resource, mimeTypes);
+                Response response = ResponseFactory.getResponse(request, resource, httpdConf, mimeTypes);
     
                 response.send(clientSocket.getOutputStream());
             } catch (FileNotFoundException ex) {

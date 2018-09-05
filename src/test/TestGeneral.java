@@ -9,8 +9,12 @@ import java.time.format.DateTimeFormatter;
 
 import main.javaserver.confreaders.HttpdConf;
 import main.javaserver.httpmessages.Resource;
+import main.javaserver.httpmessages.Response;
+import main.javaserver.httpmessages.request_executors.RequestExecutor;
+import main.javaserver.httpmessages.request_executors.RequestExecutorGET;
 
 public class TestGeneral {
+    
     
     public void testResource(String uri, HttpdConf httpdConf) throws FileNotFoundException, IOException {
         Resource resource = new Resource(uri, httpdConf);
@@ -43,8 +47,10 @@ public class TestGeneral {
 
         return response;
     }
+    
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
+        /*
         TestGeneral testGeneral = new TestGeneral();
 
         HttpdConf httpdConf = new HttpdConf("src/main/javaserver/conf/httpd.conf");
@@ -52,7 +58,10 @@ public class TestGeneral {
 
         testGeneral.testResource("/", httpdConf);
         testGeneral.testResource("/cgi-bin/", httpdConf);
-        System.out.println("Testing Date Format: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
+        */
+        System.out.println(RequestExecutor.requestExecutors.get("GET").toString());
+
+        //System.out.println("Testing Date Format: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
     }
 
 }

@@ -1,6 +1,13 @@
 package main.javaserver.httpmessages.request_executors;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import main.javaserver.confreaders.HttpdConf;
@@ -15,11 +22,53 @@ import main.javaserver.httpmessages.request_executors.RequestExecutorDELETE;
 import main.javaserver.httpmessages.request_executors.RequestExecutorHEAD;
 import main.javaserver.httpmessages.request_executors.RequestExecutorPUT;
 
-public class RequestExecutor {
+public abstract class RequestExecutor {
     
-    public Response getResponse(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimeTypes) {
+    /**
+     * Executes the given HTTP request and returns a HTTP response.
+     * @param request The HTTP request to serve.
+     * @param resource The resource desired by the HTTP request.
+     * @param httpdConf The httpd.conf file containing web server details.
+     * @param mimeTypes The mime.types for determining content type.
+     * @return The Response object representating a HTTP response to be sent back to the client.
+     * @throws IOException
+     * @see Response 
+     * @see Request 
+     * @see HttpdConf 
+     * @see Mimetypes
+     */
+    public abstract Response execute(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimeTypes) throws IOException;
+
+    /**
+     * Returns a Response object with default values loaded.
+     * @param request The HTTP request to serve.
+     * @param resource The resource desired by the HTTP request.
+     * @param httpdConf The httpd.conf file containing web server details.
+     * @param mimeTypes The mime.types for determining content type.
+     * @return The Response object representating a HTTP response to be sent back to the client.
+     * @see Response 
+     * @see Request 
+     * @see HttpdConf 
+     * @see Mimetypes
+     */
+    protected Response getInitializedResponse(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimetypes) {
         Response response = new Response();
-        //TODO: implement this to have the mandatory header + values in responses.
+        response.addHeaderValue("Date", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
+        response.addHeaderValue("Server", "jimmyh3-java-web-server");
+
+        return response;
+    }
+
+    protected Response loadResourceContent(Response response, Resource resource, MimeTypes mimeTypes) throws IOException {
+        File reqFile = new File(resource.getAbsolutePath());
+        byte[] reqFileData = Files.readAllBytes(reqFile.toPath());
+        List<Byte> responseBody = new ArrayList<>();
+        for (byte b : reqFileData) { responseBody.add(b); } 
+
+        response.setBody(responseBody);
+        response.addHeaderValue("Content-Type", mimeTypes.getMimeType(resource.getAbsolutePath()));
+        response.addHeaderValue("Content-Length", Integer.toString(reqFileData.length));
+
         return response;
     }
 }
