@@ -17,8 +17,24 @@ import main.javaserver.confreaders.MimeTypes;
 import main.javaserver.httpmessages.Request;
 import main.javaserver.httpmessages.Resource;
 import main.javaserver.httpmessages.Response;
+import main.javaserver.httpmessages.request_executors.RequestExecutor;
+import main.javaserver.httpmessages.request_executors.RequestExecutorGET;
+import main.javaserver.httpmessages.request_executors.RequestExecutorPOST;
+import main.javaserver.httpmessages.request_executors.RequestExecutorPUT;
+import main.javaserver.httpmessages.request_executors.RequestExecutorDELETE;
+import main.javaserver.httpmessages.request_executors.RequestExecutorHEAD;
 
 public class ResponseFactory {
+
+    public static Map<String, RequestExecutor> requestExecutors = new HashMap<>();
+    
+    static {
+        requestExecutors.put("GET", new RequestExecutorGET());
+        requestExecutors.put("POST", new RequestExecutorPOST());
+        requestExecutors.put("HEAD", new RequestExecutorHEAD());
+        requestExecutors.put("PUT", new RequestExecutorPUT());
+        requestExecutors.put("DELETE", new RequestExecutorDELETE());
+    }
 
     private ResponseFactory() {}
 
@@ -28,18 +44,22 @@ public class ResponseFactory {
 
         if (requireAuth(resource) && !hasAuthHeader(request)) {
             //TODO: Create and return 401 Response.
+            System.out.println("Require authorization but has no auth headers!");
         }
 
         if (requireAuth(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource)) {
             //TODO: Create and return 403 Response.
+            System.out.println("Require authorization and has headers but invalid credentials!");
         }
 
         if (doesResourceExist(resource)) {
             //TODO: Create and return 404 Response.
+            System.out.println("Requested resource does no exist!");
         }
         
         if (resource.isScript()) {
             //TODO: Execute script; return 200 for success or 500 for failure
+            System.out.println("Requested resource is a script!");
         } else {
             //TODO: Handle PUT, DELETE, POST, GET, HEAD
             if (request.getVerb().equals("GET")) {
