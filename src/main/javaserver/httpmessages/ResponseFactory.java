@@ -66,7 +66,7 @@ public class ResponseFactory {
             //TODO: Handle PUT, DELETE, POST, GET, HEAD
             RequestExecutor requestExecutor = requestExecutors.get(request.getVerb());
             if (requestExecutor != null) {
-                response = requestExecutor.execute(request, resource, httpdConf, mimeTypes);
+                response = requestExecutor.execute(request, resource, mimeTypes);
             }
         }
 

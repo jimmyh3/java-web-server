@@ -28,7 +28,6 @@ public abstract class RequestExecutor {
      * Executes the given HTTP request and returns a HTTP response.
      * @param request The HTTP request to serve.
      * @param resource The resource desired by the HTTP request.
-     * @param httpdConf The httpd.conf file containing web server details.
      * @param mimeTypes The mime.types for determining content type.
      * @return The Response object representating a HTTP response to be sent back to the client.
      * @throws IOException
@@ -37,13 +36,12 @@ public abstract class RequestExecutor {
      * @see HttpdConf 
      * @see Mimetypes
      */
-    public abstract Response execute(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimeTypes) throws IOException;
+    public abstract Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException;
 
     /**
      * Returns a Response object with default values loaded.
      * @param request The HTTP request to serve.
      * @param resource The resource desired by the HTTP request.
-     * @param httpdConf The httpd.conf file containing web server details.
      * @param mimeTypes The mime.types for determining content type.
      * @return The Response object representating a HTTP response to be sent back to the client.
      * @see Response 
@@ -51,7 +49,7 @@ public abstract class RequestExecutor {
      * @see HttpdConf 
      * @see Mimetypes
      */
-    protected Response getInitializedResponse(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimetypes) {
+    protected Response getInitializedResponse(Request request, Resource resource, MimeTypes mimetypes) {
         Response response = new Response();
         response.addHeaderValue("Date", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
         response.addHeaderValue("Server", "jimmyh3-java-web-server");
