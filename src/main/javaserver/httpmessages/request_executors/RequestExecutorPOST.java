@@ -16,8 +16,8 @@ public class RequestExecutorPOST extends RequestExecutor {
     }
     
     @Override
-    protected Response serve(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
-        Response response = super.getInitializedResponse(request, resource, httpdConf, mimetypes);
+    protected Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
+        Response response = initializedResponse;
         response = getScriptContent(request, resource, mimeTypes);
 
         response.setCode(200);

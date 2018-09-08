@@ -26,20 +26,13 @@ public abstract class RequestExecutor {
     
     /**
      * Executes the given HTTP request and returns a HTTP response.
-     * @param request The HTTP request to serve.
-     * @param resource The resource desired by the HTTP request.
-     * @param mimeTypes The mime.types for determining content type.
-     * @return The Response object representating a HTTP response to be sent back to the client.
-     * @throws IOException
-     * @see Response 
-     * @see Request 
-     * @see HttpdConf 
-     * @see Mimetypes
      */
-    protected abstract Response serve(Request request, Resource resource, MimeTypes mimeTypes) throws IOException;
+    protected abstract Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException;
 
     public Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
         Response response = new Response();
+        response.addHeaderValue("Date", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
+        response.addHeaderValue("Server", "jimmyh3-java-web-server");
 
         if (requireAuth(resource) && !hasAuthHeader(request)) {
             System.out.println("Require authorization but authorization headers found!");
@@ -48,10 +41,10 @@ public abstract class RequestExecutor {
         } else if (doesResourceExist(resource)) {
             System.out.println("Requested resource does not exist!");
         } else {
-            response = serve(request, resource, mimeTypes);
+            response = serve(response, request, resource, mimeTypes);
         }
 
-        response = serve(request, resource, mimeTypes); //TODO: delete this code after implementing auth checks above.
+        response = serve(response, request, resource, mimeTypes); //TODO: delete this code after implementing auth checks above.
         return response; 
     }
 
@@ -77,25 +70,6 @@ public abstract class RequestExecutor {
 
     private boolean doesResourceExist(Resource resource) {
         return (!(new File(resource.getAbsolutePath()).exists()));
-    }
-
-    /**
-     * Returns a Response object with default values loaded.
-     * @param request The HTTP request to serve.
-     * @param resource The resource desired by the HTTP request.
-     * @param mimeTypes The mime.types for determining content type.
-     * @return The Response object representating a HTTP response to be sent back to the client.
-     * @see Response 
-     * @see Request 
-     * @see HttpdConf 
-     * @see Mimetypes
-     */
-    protected Response getInitializedResponse(Request request, Resource resource, MimeTypes mimetypes) {
-        Response response = new Response();
-        response.addHeaderValue("Date", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
-        response.addHeaderValue("Server", "jimmyh3-java-web-server");
-
-        return response;
     }
 
     protected Response loadResourceContent(Response response, Resource resource, MimeTypes mimeTypes) throws IOException {
