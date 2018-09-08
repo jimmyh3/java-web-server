@@ -13,7 +13,7 @@ import main.javaserver.httpmessages.request_executors.RequestExecutor;
 
 public class RequestExecutorHEAD extends RequestExecutor {
     
-    private Response getResourceHeaders(Response response, Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimeTypes) throws IOException {
+    private Response getResourceHeaders(Response response, Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
         File reqFile = new File(resource.getAbsolutePath());
         byte[] reqFileData = Files.readAllBytes(reqFile.toPath());
 
@@ -24,9 +24,9 @@ public class RequestExecutorHEAD extends RequestExecutor {
     }
 
     @Override
-    public Response execute(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimeTypes) throws IOException {
-        Response response = super.getInitializedResponse(request, resource, httpdConf, mimeTypes);
-        response = getResourceHeaders(response, request, resource, httpdConf, mimeTypes);
+    public Response serve(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
+        Response response = super.getInitializedResponse(request, resource, mimeTypes);
+        response = getResourceHeaders(response, request, resource, mimeTypes);
         
         response.setCode(200);
         response.setReasonPhrase("OK");

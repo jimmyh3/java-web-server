@@ -36,7 +36,24 @@ public abstract class RequestExecutor {
      * @see HttpdConf 
      * @see Mimetypes
      */
-    public abstract Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException;
+    protected abstract Response serve(Request request, Resource resource, MimeTypes mimeTypes) throws IOException;
+
+    public Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
+        Response response = new Response();
+        boolean requireAuth = false;        //TODO: implement
+        boolean noAuthHeaders = false;      //TODO: implement
+        boolean invalidAuth = false;        //TODO: implement
+
+        if (requireAuth && noAuthHeaders) {
+
+        } else if (requireAuth && !noAuthHeaders && invalidAuth) {
+
+        } else {
+            response = serve(request, resource, mimeTypes);
+        }
+
+        return response; 
+    }
 
     /**
      * Returns a Response object with default values loaded.

@@ -12,7 +12,7 @@ import main.javaserver.httpmessages.request_executors.RequestExecutor;
 public class RequestExecutorGET extends RequestExecutor {
     
     @Override
-    public Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
+    public Response serve(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
 
         Response response = super.getInitializedResponse(request, resource, mimeTypes);
         response = super.loadResourceContent(response, resource, mimeTypes);
