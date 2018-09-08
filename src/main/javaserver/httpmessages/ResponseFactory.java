@@ -41,61 +41,16 @@ public class ResponseFactory {
     private ResponseFactory() {}
 
     public static Response getResponse(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimeTypes) throws IOException {
-        // Exception vs boolean; exceptions are for exceptional circumstances.
         Response response = new Response();
 
-        if (requireAuth(resource) && !hasAuthHeader(request)) {
-            //TODO: Create and return 401 Response.
-            System.out.println("Require authorization but has no auth headers!");
-        }
-
-        if (requireAuth(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource)) {
-            //TODO: Create and return 403 Response.
-            System.out.println("Require authorization and has headers but invalid credentials!");
-        }
-
-        if (doesResourceExist(resource)) {
-            //TODO: Create and return 404 Response.
-            System.out.println("Requested resource does no exist!");
-        }
-        
-        if (resource.isScript()) {
-            //TODO: Execute script; return 200 for success or 500 for failure
-            System.out.println("Requested resource is a script!");
+        RequestExecutor requestExecutor = requestExecutors.get(request.getVerb());
+        if (requestExecutor != null) {
+            response = requestExecutor.execute(request, resource, mimeTypes);
         } else {
-            //TODO: Handle PUT, DELETE, POST, GET, HEAD
-            RequestExecutor requestExecutor = requestExecutors.get(request.getVerb());
-            if (requestExecutor != null) {
-                response = requestExecutor.execute(request, resource, mimeTypes);
-            }
+            //TODO: Handle Not Implemented Response
         }
-
         
         return response;
-    }
-
-    private static boolean requireAuth(Resource resource) {
-        return resource.isProtected();
-    }
-
-    private static boolean hasAuthHeader(Request request) {
-        String authValue = request.getHeader("Authorization");
-
-        return authValue != null;
-    }
-
-    private static boolean hasAuthAccess(Request request, Resource resource) {
-        String[] authValue = request.getHeader("Authorization").split(" ");
-        String authType = authValue[0].trim();
-        String authEncoded = authValue[1].trim();
-        Htaccess accessFile = WebServer.getHtaccess(resource.getAccessFilePath());
-        Htpassword htpassword = accessFile.getUserFile();
-
-        return htpassword.isAuthorized(authEncoded);
-    }
-
-    private static boolean doesResourceExist(Resource resource) {
-        return (!(new File(resource.getAbsolutePath()).exists()));
     }
 
 }

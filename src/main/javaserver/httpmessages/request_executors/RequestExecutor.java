@@ -40,19 +40,43 @@ public abstract class RequestExecutor {
 
     public Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
         Response response = new Response();
-        boolean requireAuth = false;        //TODO: implement
-        boolean noAuthHeaders = false;      //TODO: implement
-        boolean invalidAuth = false;        //TODO: implement
 
-        if (requireAuth && noAuthHeaders) {
-
-        } else if (requireAuth && !noAuthHeaders && invalidAuth) {
-
+        if (requireAuth(resource) && !hasAuthHeader(request)) {
+            System.out.println("Require authorization but authorization headers found!");
+        } else if (requireAuth(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource)) {
+            System.out.println("Require authorization but invalid credentials!");
+        } else if (doesResourceExist(resource)) {
+            System.out.println("Requested resource does not exist!");
         } else {
             response = serve(request, resource, mimeTypes);
         }
 
+        response = serve(request, resource, mimeTypes); //TODO: delete this code after implementing auth checks above.
         return response; 
+    }
+
+    private boolean requireAuth(Resource resource) {
+        return resource.isProtected();
+    }
+
+    private boolean hasAuthHeader(Request request) {
+        String authValue = request.getHeader("Authorization");
+
+        return authValue != null;
+    }
+
+    private boolean hasAuthAccess(Request request, Resource resource) {
+        String[] authValue = request.getHeader("Authorization").split(" ");
+        String authType = authValue[0].trim();
+        String authEncoded = authValue[1].trim();
+        Htaccess accessFile = WebServer.getHtaccess(resource.getAccessFilePath());
+        Htpassword htpassword = accessFile.getUserFile();
+
+        return htpassword.isAuthorized(authEncoded);
+    }
+
+    private boolean doesResourceExist(Resource resource) {
+        return (!(new File(resource.getAbsolutePath()).exists()));
     }
 
     /**
