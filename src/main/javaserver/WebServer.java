@@ -22,7 +22,7 @@ public class WebServer {
     private ExecutorService threadPool;
     private HttpdConf httpdConf;
     private MimeTypes mimeTypes;
-    public static Map<String, Htaccess> accessFiles = new HashMap<>();
+    private static Map<String, Htaccess> accessFiles = new HashMap<>();
 
     /**
      * Retrieve the Htaccess based on the given filepath(name included).
