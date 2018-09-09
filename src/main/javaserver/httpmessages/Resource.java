@@ -19,6 +19,7 @@ public class Resource {
 
     public Resource (String uri, HttpdConf httpdConf) throws FileNotFoundException, IOException {
 		absolutePath = setAbsolutePath(uri, httpdConf);
+		System.out.println("Request resource: " + absolutePath);
 	}
 
 	private String setAbsolutePath(String uri, HttpdConf httpdConf) throws FileNotFoundException, IOException {
