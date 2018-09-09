@@ -39,14 +39,12 @@ public abstract class RequestExecutor {
         response.addHeaderValue("Date", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
         response.addHeaderValue("Server", "jimmyh3-java-web-server");
 
-        if (requireAuth(resource) && !hasAuthHeader(request)) {
+        if ((requireAuth(resource) && !hasAuthHeader(request)) || (requireAuth(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource))) {
             System.out.println("Require authorization but authorization headers not found!");
             Htaccess htaccess = resource.getAccessFile();
             response.setCode(401);
             response.setReasonPhrase("Unauthorized");
             response.addHeaderValue("WWW-Authenticate", String.format("%s realm=\"%s\"", htaccess.getAuthType(), htaccess.getAuthName()));
-        } else if (requireAuth(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource)) {
-            System.out.println("Require authorization but invalid credentials!");
         } else if (doesResourceExist(resource)) {
             System.out.println("Requested resource does not exist!");
         } else {
