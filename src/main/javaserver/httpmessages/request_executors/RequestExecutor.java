@@ -40,15 +40,31 @@ public abstract class RequestExecutor {
         response.addHeaderValue("Server", "jimmyh3-java-web-server");
 
         if ((isAuthRequired(resource) && !hasAuthHeader(request)) || (isAuthRequired(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource))) {
-            System.out.println("Require authorization but authorization headers not found!");
             response = getUnauthorizedResponse(response, resource);
         } else if (doesResourceExist(resource)) {
-            System.out.println("Requested resource does not exist!");
+            response = getNotFoundResponse(response);
+        } else if (isResourceAScript(resource)) {
+            System.out.println("Requested resource is a script to process!");
         } else {
             response = serve(response, request, resource, mimeTypes);
         }
 
         return response; 
+    }
+
+    private Response getNotFoundResponse(Response initializedResponse) {
+        String html = String.format("<html><body><p>%s</p></body></html>", "Resource Not Found!");
+        byte[] byteBody = html.getBytes();
+        List<Byte> responseBody = new ArrayList<>();
+        for (byte b : byteBody) { responseBody.add(b); }
+
+        Response response = initializedResponse;
+        response.setCode(404);
+        response.setReasonPhrase("Not Found");
+        response.setBody(responseBody);
+        response.addHeaderValue("Connection", "close");
+
+        return response;
     }
 
     private Response getUnauthorizedResponse(Response initializedResponse, Resource resource) {
@@ -58,6 +74,10 @@ public abstract class RequestExecutor {
         initializedResponse.addHeaderValue("WWW-Authenticate", String.format("%s realm=\"%s\"", htaccess.getAuthType(), htaccess.getAuthName()));
 
         return initializedResponse;
+    }
+
+    private boolean isResourceAScript(Resource resource) {
+        return resource.isScript();
     }
 
     private boolean isAuthRequired(Resource resource) {
