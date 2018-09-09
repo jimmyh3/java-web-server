@@ -68,8 +68,8 @@ public class Request {
         
         while (!(headerLine = clientSocketIn.readLine()).isEmpty()) {
             String[] headerLineSplit = headerLine.split(":");
-            String headerName = headerLineSplit[0];
-            String headerValue = headerLineSplit[1];
+            String headerName = headerLineSplit[0].trim();
+            String headerValue = headerLineSplit[1].trim();
 
             headers.put(headerName, headerValue);
         }

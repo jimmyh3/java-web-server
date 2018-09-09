@@ -2,6 +2,7 @@ package main.javaserver.confreaders;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Base64;
@@ -35,7 +36,7 @@ public class Htpassword extends ConfigurationReader {
         }
     }
 
-    public boolean isAuthorized(String userPassEncoded) throws NoSuchAlgorithmException {
+    public boolean isAuthorized(String userPassEncoded) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String userPassDecoded = new String(Base64.getDecoder().decode(userPassEncoded), "UTF-8");
         String[] userPassPair = userPassDecoded.split(":");
         String username = userPassPair[0].trim();

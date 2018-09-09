@@ -2,7 +2,9 @@ package main.javaserver.httpmessages.request_executors;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.javaserver.WebServer;
+import main.javaserver.confreaders.Htaccess;
+import main.javaserver.confreaders.Htpassword;
 import main.javaserver.confreaders.HttpdConf;
 import main.javaserver.confreaders.MimeTypes;
 import main.javaserver.httpmessages.Request;
@@ -29,13 +34,17 @@ public abstract class RequestExecutor {
      */
     protected abstract Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException;
 
-    public Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
+    public Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException, NoSuchAlgorithmException, UnsupportedEncodingException {
         Response response = new Response();
         response.addHeaderValue("Date", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
         response.addHeaderValue("Server", "jimmyh3-java-web-server");
 
         if (requireAuth(resource) && !hasAuthHeader(request)) {
-            System.out.println("Require authorization but authorization headers found!");
+            System.out.println("Require authorization but authorization headers not found!");
+            Htaccess htaccess = resource.getAccessFile();
+            response.setCode(401);
+            response.setReasonPhrase("Unauthorized");
+            response.addHeaderValue("WWW-Authenticate", String.format("%s realm=\"%s\"", htaccess.getAuthType(), htaccess.getAuthName()));
         } else if (requireAuth(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource)) {
             System.out.println("Require authorization but invalid credentials!");
         } else if (doesResourceExist(resource)) {
@@ -44,7 +53,6 @@ public abstract class RequestExecutor {
             response = serve(response, request, resource, mimeTypes);
         }
 
-        response = serve(response, request, resource, mimeTypes); //TODO: delete this code after implementing auth checks above.
         return response; 
     }
 
@@ -58,9 +66,8 @@ public abstract class RequestExecutor {
         return authValue != null;
     }
 
-    private boolean hasAuthAccess(Request request, Resource resource) {
+    private boolean hasAuthAccess(Request request, Resource resource) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String[] authValue = request.getHeader("Authorization").split(" ");
-        String authType = authValue[0].trim();
         String authEncoded = authValue[1].trim();
         Htaccess accessFile = WebServer.getHtaccess(resource.getAccessFilePath());
         Htpassword htpassword = accessFile.getUserFile();

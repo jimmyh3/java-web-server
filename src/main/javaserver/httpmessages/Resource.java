@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import main.javaserver.WebServer;
+import main.javaserver.confreaders.Htaccess;
 import main.javaserver.confreaders.HttpdConf;
 
 public class Resource {
@@ -110,6 +111,10 @@ public class Resource {
 		}
 
 		return isProtected;
+	}
+
+	public Htaccess getAccessFile() {
+		return WebServer.getHtaccess(accessFilePath);
 	}
 
 	public String getAccessFilePath() {
