@@ -39,12 +39,9 @@ public abstract class RequestExecutor {
         response.addHeaderValue("Date", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
         response.addHeaderValue("Server", "jimmyh3-java-web-server");
 
-        if ((requireAuth(resource) && !hasAuthHeader(request)) || (requireAuth(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource))) {
+        if ((isAuthRequired(resource) && !hasAuthHeader(request)) || (isAuthRequired(resource) && hasAuthHeader(request) && !hasAuthAccess(request, resource))) {
             System.out.println("Require authorization but authorization headers not found!");
-            Htaccess htaccess = resource.getAccessFile();
-            response.setCode(401);
-            response.setReasonPhrase("Unauthorized");
-            response.addHeaderValue("WWW-Authenticate", String.format("%s realm=\"%s\"", htaccess.getAuthType(), htaccess.getAuthName()));
+            response = getUnauthorizedResponse(response, resource);
         } else if (doesResourceExist(resource)) {
             System.out.println("Requested resource does not exist!");
         } else {
@@ -54,7 +51,16 @@ public abstract class RequestExecutor {
         return response; 
     }
 
-    private boolean requireAuth(Resource resource) {
+    private Response getUnauthorizedResponse(Response initializedResponse, Resource resource) {
+        Htaccess htaccess = resource.getAccessFile();
+        initializedResponse.setCode(401);
+        initializedResponse.setReasonPhrase("Unauthorized");
+        initializedResponse.addHeaderValue("WWW-Authenticate", String.format("%s realm=\"%s\"", htaccess.getAuthType(), htaccess.getAuthName()));
+
+        return initializedResponse;
+    }
+
+    private boolean isAuthRequired(Resource resource) {
         return resource.isProtected();
     }
 
