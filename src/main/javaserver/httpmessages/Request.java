@@ -100,4 +100,9 @@ public class Request {
     public String getHttpVersion() {
         return httpVersion;
     }
+
+    public List<Byte> getBody() {
+        return body;
+    }
+    
 }
