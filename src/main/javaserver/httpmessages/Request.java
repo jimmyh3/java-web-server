@@ -2,7 +2,9 @@ package main.javaserver.httpmessages;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Map;
@@ -26,13 +28,13 @@ public class Request {
 
     private void init(Socket _clientSocket) {
         try {
-            BufferedReader clientSocketIn = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
+            DataInputStream clientSocketIn = new DataInputStream(new BufferedInputStream(_clientSocket.getInputStream()));
             headers = new HashMap<>();
             body = new ArrayList<>();
 
             getSetStartLine(clientSocketIn);
             getSetHeaders(clientSocketIn);
-            getSetBody(_clientSocket.getInputStream());
+            getSetBody(clientSocketIn);
         } catch (BadRequestException | IOException | ArrayIndexOutOfBoundsException ex) {
             System.err.println("Bad Request: " + ex.getMessage());
             uri = "/";
@@ -41,9 +43,9 @@ public class Request {
         }
     }
 
-    private void getSetStartLine(BufferedReader clientSocketIn) throws BadRequestException, IOException {
+    private void getSetStartLine(DataInputStream clientSocketIn) throws BadRequestException, IOException {
         String startLine = null;
-        
+
         do {
             startLine = clientSocketIn.readLine();
         } while (startLine == null || startLine.isEmpty());
@@ -63,7 +65,7 @@ public class Request {
         }
     }
 
-    private void getSetHeaders(BufferedReader clientSocketIn) throws IOException {
+    private void getSetHeaders(DataInputStream clientSocketIn) throws IOException {
         String headerLine = "";
         
         while (!(headerLine = clientSocketIn.readLine()).isEmpty()) {
@@ -75,12 +77,15 @@ public class Request {
         }
     }
 
-    private void getSetBody(InputStream clientSocketIn) throws IOException {
+    private void getSetBody(DataInputStream clientSocketIn) throws IOException {
         if (headers.containsKey("Content-Length")) {
             int contentLength = Integer.parseInt(headers.get("Content-Length").trim());
+            byte[] bodyBytes = new byte[contentLength];
 
-            for (int i = 0; i < contentLength; i++) {
-                body.add((byte)clientSocketIn.read());
+            clientSocketIn.read(bodyBytes);
+
+            for (byte b : bodyBytes) {
+                body.add(b);
             }
         }
     }
@@ -104,5 +109,5 @@ public class Request {
     public List<Byte> getBody() {
         return body;
     }
-    
+
 }
