@@ -3,9 +3,12 @@ package test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import main.javaserver.confreaders.HttpdConf;
 import main.javaserver.httpmessages.Resource;
@@ -15,6 +18,16 @@ import main.javaserver.httpmessages.request_executors.RequestExecutorGET;
 
 public class TestGeneral {
     
+    public void testCreateFile() throws IOException {
+        File file = new File("C:\\Users\\jimmy\\Desktop\\test.txt");
+        Path path = file.toPath();
+        String text = "Hello world! You";
+        byte[] fileData = text.getBytes();
+
+        file.createNewFile();
+
+        Files.write(path, fileData);
+    }
     
     public void testResource(String uri, HttpdConf httpdConf) throws FileNotFoundException, IOException {
         Resource resource = new Resource(uri, httpdConf);
@@ -50,18 +63,18 @@ public class TestGeneral {
     
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        /*
+        
         TestGeneral testGeneral = new TestGeneral();
-
+        /*
         HttpdConf httpdConf = new HttpdConf("src/main/javaserver/conf/httpd.conf");
         httpdConf.load();
 
         testGeneral.testResource("/", httpdConf);
         testGeneral.testResource("/cgi-bin/", httpdConf);
         */
-        System.out.println(RequestExecutor.requestExecutors.get("GET").toString());
-
+        //System.out.println(RequestExecutor.requestExecutors.get("GET").toString());
         //System.out.println("Testing Date Format: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
+        testGeneral.testCreateFile();
     }
 
 }
