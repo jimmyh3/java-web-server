@@ -5,10 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import main.javaserver.confreaders.HttpdConf;
 import main.javaserver.httpmessages.Resource;
@@ -17,6 +21,19 @@ import main.javaserver.httpmessages.request_executors.RequestExecutor;
 import main.javaserver.httpmessages.request_executors.RequestExecutorGET;
 
 public class TestGeneral {
+
+    public void testSimpleDateFormat(String time) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy hh:mm:ss z");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("PST"));
+
+        Date date = simpleDateFormat.parse(time);
+        long dateLong = date.getTime();
+
+        System.out.println("Given: " + time);
+        System.out.println("To Long: " + dateLong);
+        System.out.println("Back to String: " + simpleDateFormat.format(date));
+
+    }
     
     public void testCreateFile() throws IOException {
         File file = new File("C:\\Users\\jimmy\\Desktop\\test.txt");
@@ -62,7 +79,7 @@ public class TestGeneral {
     }
     
 
-    public static void main(String[] args) throws FileNotFoundException, IOException {
+    public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
         
         TestGeneral testGeneral = new TestGeneral();
         /*
@@ -74,7 +91,13 @@ public class TestGeneral {
         */
         //System.out.println(RequestExecutor.requestExecutors.get("GET").toString());
         //System.out.println("Testing Date Format: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
-        testGeneral.testCreateFile();
+        //testGeneral.testCreateFile();
+        File file = new File("C:/Users/jimmy/Desktop/CPU Settings - Increase or Decrease Processing Power.txt");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy hh:mm:ss z");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("PST"));
+
+        Date date = new Date(file.lastModified());
+        System.out.println(simpleDateFormat.format(date));
     }
 
 }

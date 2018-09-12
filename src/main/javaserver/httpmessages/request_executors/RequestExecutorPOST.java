@@ -1,5 +1,7 @@
 package main.javaserver.httpmessages.request_executors;
 
+import java.text.ParseException;
+
 import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
 
 import main.javaserver.confreaders.HttpdConf;
@@ -10,7 +12,7 @@ import main.javaserver.httpmessages.request_executors.RequestExecutor;
 
 public class RequestExecutorPOST extends RequestExecutor {
 
-    private List<Byte> getScriptContent(Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
+    private List<Byte> getScriptContent(Request request, Resource resource, MimeTypes mimeTypes) throws IOException, ParseException {
         //TODO: run the script and pass the POST request data to it.
         //NOTE: scripts will handle the Response heads + content body as output. (right?)
     }

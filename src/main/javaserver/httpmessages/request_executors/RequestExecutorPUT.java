@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.List;
 
 import main.javaserver.confreaders.MimeTypes;
@@ -29,7 +30,7 @@ public class RequestExecutorPUT extends RequestExecutor {
     }
     
     @Override
-    protected Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
+    protected Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException, ParseException {
         Response response = initializedResponse;
 
         createWriteRequestFile(request, resource);

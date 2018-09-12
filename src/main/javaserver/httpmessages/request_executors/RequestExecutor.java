@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,9 +33,9 @@ public abstract class RequestExecutor {
     /**
      * Executes the given HTTP request and returns a HTTP response.
      */
-    protected abstract Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException;
+    protected abstract Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException, ParseException;
 
-    public Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Response execute(Request request, Resource resource, MimeTypes mimeTypes) throws IOException, NoSuchAlgorithmException, UnsupportedEncodingException, ParseException {
         Response response = new Response();
         response.addHeaderValue("Date", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
         response.addHeaderValue("Server", "jimmyh3-java-web-server");

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,7 +43,7 @@ public class ResponseFactory {
 
     private ResponseFactory() {}
 
-    public static Response getResponse(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimeTypes) throws IOException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static Response getResponse(Request request, Resource resource, HttpdConf httpdConf, MimeTypes mimeTypes) throws IOException, NoSuchAlgorithmException, UnsupportedEncodingException, ParseException {
         Response response = new Response();
 
         RequestExecutor requestExecutor = requestExecutors.get(request.getVerb());

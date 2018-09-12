@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +58,8 @@ public class WebClient implements Runnable {
             } catch (IOException ex) {
                 System.err.println(ex.getMessage());
             } catch (NoSuchAlgorithmException ex) {
+                System.err.println(ex.getMessage());
+            } catch (ParseException ex) {
                 System.err.println(ex.getMessage());
             } 
         }
