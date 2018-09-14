@@ -18,15 +18,9 @@ public class RequestExecutorPUT extends RequestExecutor {
     private void createWriteRequestFile(Request request, Resource resource) throws IOException {
         File file = new File(resource.getAbsolutePath());
         Path path = file.toPath();
-        List<Byte> requestBody = request.getBody();
-        byte[] fileData = new byte[requestBody.size()];
-
-        for (int i = 0; i < requestBody.size(); i++) { 
-            fileData[i] = requestBody.get(i);
-        }
 
         file.createNewFile();
-        Files.write(path, fileData);
+        Files.write(path, request.getBody());
     }
     
     @Override

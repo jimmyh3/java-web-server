@@ -8,7 +8,6 @@ import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class Request {
     private String uri;
     private String verb;
     private String httpVersion;
-    private List<Byte> body;
+    private byte[] body;
     private Map<String, String> headers;
 
     public Request(Socket _clientSocket) {
@@ -30,7 +29,6 @@ public class Request {
         try {
             DataInputStream clientSocketIn = new DataInputStream(new BufferedInputStream(_clientSocket.getInputStream()));
             headers = new HashMap<>();
-            body = new ArrayList<>();
 
             getSetStartLine(clientSocketIn);
             getSetHeaders(clientSocketIn);
@@ -84,9 +82,9 @@ public class Request {
 
             clientSocketIn.read(bodyBytes);
 
-            for (byte b : bodyBytes) {
-                body.add(b);
-            }
+            body = bodyBytes;
+        } else {
+            body = new byte[0];
         }
     }
 
@@ -106,7 +104,7 @@ public class Request {
         return httpVersion;
     }
 
-    public List<Byte> getBody() {
+    public byte[] getBody() {
         return body;
     }
 

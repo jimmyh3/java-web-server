@@ -46,7 +46,7 @@ public class Response {
 		BufferedOutputStream bfo = new BufferedOutputStream(clientSocketOut);
 		String startLine = String.format("%s %d %s\n", httpVersion, code, reasonPhrase);
 		String headerStr = getResponseHeaderString(headers);
-
+		
 		bfo.write(startLine.getBytes());
 		bfo.write(headerStr.getBytes());
 		bfo.write("\n".getBytes());
@@ -62,7 +62,7 @@ public class Response {
 		headers.put(header, value);
 	}
 	
-	private String getResponseHeaderString(Map<String, String> _headers) {
+	protected String getResponseHeaderString(Map<String, String> _headers) {
 		String headerStr = "";
 
 		for (Map.Entry<String, String> entry : _headers.entrySet()) {
