@@ -1,4 +1,3 @@
-#!/usr/bin/perl -wT
 use strict;
 use CGI qw(:standard);
 use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
