@@ -1,6 +1,7 @@
 package main.javaserver.httpmessages;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -15,14 +16,17 @@ public class Response {
     private int code;
 	private String reasonPhrase;
 	private Map<String, String> headers;
-	private List<Byte> body;
+	private byte[] body;
 
+	//1. Modify this class to accomodate both versions via if-else size of ByteArrayOutputStream
+	//2. Create Subclass of this and override send() to accomodate scripts.
+	//3. 
     public Response() {
 		httpVersion = "HTTP/1.1";
 		code = 500;
 		reasonPhrase = "Internal Server Error";
 		headers = new HashMap<>();
-		body = new ArrayList<>();
+		body = new byte[0]; // To be set externally.
 	}
 
 	public Response(Resource _resource) {
@@ -39,8 +43,8 @@ public class Response {
 	public void setReasonPhrase(String reasonPhrase) { this.reasonPhrase = reasonPhrase; }
 	public Map<String, String> getHeaders() { return headers; }
 	public void setHeaders(Map<String, String> headers) { this.headers = headers; }
-	public List<Byte> getBody() { return body; }
-	public void setBody(List<Byte> body) { this.body = body; }
+	public byte[] getBody() { return body; }
+	public void setBody(byte[] body) { this.body = body; }
 
 	public void send(OutputStream clientSocketOut) throws IOException {
 		BufferedOutputStream bfo = new BufferedOutputStream(clientSocketOut);
@@ -50,10 +54,7 @@ public class Response {
 		bfo.write(startLine.getBytes());
 		bfo.write(headerStr.getBytes());
 		bfo.write("\n".getBytes());
-		
-		for (Byte bite : body) {
-			bfo.write(bite);
-		}
+		bfo.write(body);
 
 		bfo.flush();
 	}

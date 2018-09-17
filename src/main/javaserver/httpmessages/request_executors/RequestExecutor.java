@@ -55,9 +55,7 @@ public abstract class RequestExecutor {
 
     private Response getNotFoundResponse(Response initializedResponse) {
         String html = String.format("<html><body><p>%s</p></body></html>", "Resource Not Found!");
-        byte[] byteBody = html.getBytes();
-        List<Byte> responseBody = new ArrayList<>();
-        for (byte b : byteBody) { responseBody.add(b); }
+        byte[] responseBody = html.getBytes();
 
         Response response = initializedResponse;
         response.setCode(404);
@@ -106,13 +104,11 @@ public abstract class RequestExecutor {
 
     protected Response loadResourceContent(Response response, Resource resource, MimeTypes mimeTypes) throws IOException {
         File reqFile = new File(resource.getAbsolutePath());
-        byte[] reqFileData = Files.readAllBytes(reqFile.toPath());
-        List<Byte> responseBody = new ArrayList<>();
-        for (byte b : reqFileData) { responseBody.add(b); } 
+        byte[] responseBody = Files.readAllBytes(reqFile.toPath());
 
         response.setBody(responseBody);
         response.addHeaderValue("Content-Type", mimeTypes.getMimeType(resource.getAbsolutePath()));
-        response.addHeaderValue("Content-Length", Integer.toString(reqFileData.length));
+        response.addHeaderValue("Content-Length", Integer.toString(responseBody.length));
 
         return response;
     }
