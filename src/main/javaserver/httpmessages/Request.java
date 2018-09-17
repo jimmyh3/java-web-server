@@ -88,6 +88,10 @@ public class Request {
         }
     }
 
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
     public String getHeader(String fieldName) {
         return headers.get(fieldName);
     }
