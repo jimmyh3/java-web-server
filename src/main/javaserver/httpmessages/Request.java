@@ -20,6 +20,7 @@ public class Request {
     private String httpVersion;
     private byte[] body;
     private Map<String, String> headers;
+    private String queryString;
 
     public Request(Socket _clientSocket) {
         init(_clientSocket);
@@ -57,8 +58,11 @@ public class Request {
         if (startLineSplit.length != 3)  {
             throw new BadRequestException("Bad Request");
         } else {
+            String[] _uriQueryStr = startLineSplit[1].split("\\?", 2);
+            uri = _uriQueryStr[0];
+            queryString = (_uriQueryStr.length == 2) ? _uriQueryStr[1] : null;
+            
             verb = startLineSplit[0];
-            uri = startLineSplit[1];
             httpVersion = startLineSplit[2];
         }
     }
@@ -110,6 +114,14 @@ public class Request {
 
     public byte[] getBody() {
         return body;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public boolean hasQueryString() {
+        return (queryString == null);
     }
 
 }
