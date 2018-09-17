@@ -20,7 +20,7 @@ public class Response {
 
 	//1. Modify this class to accomodate both versions via if-else size of ByteArrayOutputStream
 	//2. Create Subclass of this and override send() to accomodate scripts.
-	//3. 
+	//3. Use Strategy Pattern. This still requires modification internally.
     public Response() {
 		httpVersion = "HTTP/1.1";
 		code = 500;
@@ -61,6 +61,10 @@ public class Response {
 
 	public void addHeaderValue(String header, String value) {
 		headers.put(header, value);
+	}
+
+	public String getHeaderValue(String header) {
+		return headers.get(header);
 	}
 	
 	protected String getResponseHeaderString(Map<String, String> _headers) {
