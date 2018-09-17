@@ -121,7 +121,7 @@ public class Request {
     }
 
     public boolean hasQueryString() {
-        return (queryString == null);
+        return (queryString != null);
     }
 
 }
