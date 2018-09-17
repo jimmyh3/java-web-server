@@ -16,6 +16,7 @@ import main.javaserver.confreaders.MimeTypes;
 
 public class WebServer {
 
+    public static String serverProtocol = "HTTP/1.1";
     private int port = 8080;
     private int clientId = 0;
     private ServerSocket serverSocket;
