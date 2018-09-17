@@ -1,5 +1,9 @@
 package main.javaserver.httpmessages.request_executors;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -12,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.ProcessBuilder;
+import java.lang.Process;
 
 import main.javaserver.WebServer;
 import main.javaserver.confreaders.Htaccess;
@@ -45,7 +51,7 @@ public abstract class RequestExecutor {
         } else if (doesResourceExist(resource)) {
             response = getNotFoundResponse(response);
         } else if (isResourceAScript(resource)) {
-            System.out.println("Requested resource is a script to process!");
+            response = handleScriptExecution(response, request, resource, mimeTypes);
         } else {
             response = serve(response, request, resource, mimeTypes);
         }
@@ -109,6 +115,64 @@ public abstract class RequestExecutor {
         response.setBody(responseBody);
         response.addHeaderValue("Content-Type", mimeTypes.getMimeType(resource.getAbsolutePath()));
         response.addHeaderValue("Content-Length", Integer.toString(responseBody.length));
+
+        return response;
+    }
+
+    private Response handleScriptExecution(Response response, Request request, Resource resource, MimeTypes mimeTypes) throws IOException { 
+        if (resource.isScript()) {
+            ProcessBuilder processBuilder = handleProcessBuilder(request, resource);
+            Process process = processBuilder.start();
+            response = handleScriptOutput(request, response, process);
+        }
+
+        return response;
+    }
+
+    private ProcessBuilder handleProcessBuilder(Request request, Resource resource) {
+        ProcessBuilder processBuilder = new ProcessBuilder("perl", resource.getAbsolutePath());
+        Map<String, String> pbEnvVars = processBuilder.environment();
+
+        pbEnvVars.put("SERVER_PROTOCOL", WebServer.serverProtocol);
+        for (Map.Entry<String, String> entry : request.getHeaders().entrySet()) {
+            pbEnvVars.put(entry.getKey(), entry.getValue());
+        }
+
+        if (request.getVerb().equals("GET") && request.hasQueryString()) {
+            pbEnvVars.put("QUERY_STRING", request.getQueryString());
+        }
+
+        return processBuilder;
+    }
+
+    private Response handleScriptOutput(Request request, Response response, Process process) throws IOException {
+        BufferedOutputStream processStdin = new BufferedOutputStream(process.getOutputStream());
+        DataInputStream processStdout = new DataInputStream(new BufferedInputStream(process.getInputStream()));
+        String headerLine = null;
+
+        if (request.getVerb().equals("POST") && request.getBody().length > 0) {
+            processStdin.write(request.getBody());
+            processStdin.flush();
+        }
+
+        while ((headerLine = processStdout.readLine()) != null && !headerLine.isEmpty()) {
+            String[] headerLineSplit = headerLine.split(":");
+            String headerName = headerLineSplit[0].trim();
+            String headerValue = headerLineSplit[1].trim();
+
+            response.addHeaderValue(headerName, headerValue);
+        }
+
+        if (response.getHeaderValue("Content-Length") != null) {
+            int contentLength = Integer.parseInt(response.getHeaderValue("Content-Length"));
+            byte[] contentData = new byte[contentLength];
+            processStdout.read(contentData);
+            response.setBody(contentData);
+        } else {
+            byte[] contentData = processStdout.readAllBytes();
+            response.addHeaderValue("Content-Length", Integer.toString(contentData.length));
+            response.setBody(contentData);
+        }
 
         return response;
     }
