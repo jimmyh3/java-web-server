@@ -23,7 +23,7 @@ public class Logs {
     public void setOutputFile(String outputFilePath) throws IOException {
         File tempFile = new File(outputFilePath);
         tempFile.createNewFile();
-        
+
         if (tempFile.isFile()) {
             outputFile = tempFile;
         } else {
@@ -35,26 +35,26 @@ public class Logs {
      * Write this log statement in common log format (https://en.wikipedia.org/wiki/Common_Log_Format)
      * An empty string given to any argument is set as a hyphen to indicate missing information. 
      * 
-     * @param userIp
-     * @param userId
-     * @param userName
-     * @param requestReceivedTime
-     * @param requestVerb
-     * @param requestURI
-     * @param serverProtocol
-     * @param responseCode
-     * @param responseBodySize
+     * @param userIp IP address of the client (remote host) which made the request to the server.
+     * @param userId user-identifier is the RFC 1413 identity of the client.
+     * @param userName the person requesting the document.
+     * @param requestReceivedTime time of request received as a long number. This will be formatted as for example: [10/Oct/2000:13:55:36 -0700].
+     * @param requestVerb the HTTP request verb.
+     * @param requestURI the HTTP URI requested.
+     * @param serverProtocol the server protocol. For example: HTTP/1.1
+     * @param responseCode the response code sent back to the client.
+     * @param responseBodySize the response content length if any.
      */
     public void write(String userIp, String userId, String userName, long requestReceivedTime, 
                                     String requestVerb, String requestURI, String serverProtocol, 
                                                     int responseCode, int responseBodySize) throws IOException {
 
-        if (userIp.isEmpty()) { userIp = "-"; }
-        if (userId.isEmpty()) { userId = "-"; }
-        if (userName.isEmpty()) { userName = "-"; }
-        if (requestVerb.isEmpty()) { requestVerb = "-"; }
-        if (requestURI.isEmpty()) { requestURI = "-"; }
-        if (serverProtocol.isEmpty()) { serverProtocol = "-"; }
+        if (userIp == null || userIp.isEmpty()) { userIp = "-"; }
+        if (userId == null || userId.isEmpty()) { userId = "-"; }
+        if (userName == null || userName.isEmpty()) { userName = "-"; }
+        if (requestVerb == null || requestVerb.isEmpty()) { requestVerb = "-"; }
+        if (requestURI == null || requestURI.isEmpty()) { requestURI = "-"; }
+        if (serverProtocol == null || serverProtocol.isEmpty()) { serverProtocol = "-"; }
 
         
         PrintWriter outputFileStream = null;
