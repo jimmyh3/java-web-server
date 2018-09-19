@@ -79,7 +79,9 @@ public class Resource {
 	}
 
 	private String resolveDirectoryIndexes(String uri, HttpdConf httpdConf) {
-		if (uri.charAt(uri.length()-1) != '/') return uri;
+		File resourceFile = new File(uri);
+		if (resourceFile.isFile()) return uri;
+		if (resourceFile.isDirectory() &&  uri.charAt(uri.length()-1) != '/') uri += "/";
 
 		List<String> directoryIndexes = httpdConf.getDirectoryIndexes();
 
