@@ -36,11 +36,23 @@ public class Htpassword extends ConfigurationReader {
         }
     }
 
-    public boolean isAuthorized(String userPassEncoded) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String[] getUserNamePass(String userPassEncoded) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        // TODO: take in Authorization Type such as 'Basic', 'Bearer', etc. See mdn on Authorization.
+        
         String userPassDecoded = new String(Base64.getDecoder().decode(userPassEncoded), "UTF-8");
         String[] userPassPair = userPassDecoded.split(":");
         String username = userPassPair[0].trim();
         String password = userPassPair[1].trim();
+        userPassPair[0] = username;
+        userPassPair[1] = password;
+
+        return userPassPair;
+    }
+
+    public boolean isAuthorized(String userPassEncoded) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String[] userPassPair = getUserNamePass(userPassEncoded);
+        String username = userPassPair[0];
+        String password = userPassPair[1];
 
         return isAuthorized(username, password);
     }
