@@ -6,11 +6,14 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
+import main.javaserver.confreaders.Htpassword;
 import main.javaserver.httpmessages.BadRequestException;
 
 public class Request {
@@ -21,19 +24,24 @@ public class Request {
     private byte[] body;
     private Map<String, String> headers;
     private String queryString;
+    private String userName;
+    private String userPass;
+    private long receivedTime;
 
-    public Request(Socket _clientSocket) {
+    public Request(Socket _clientSocket) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         init(_clientSocket);
     }
 
-    private void init(Socket _clientSocket) {
+    private void init(Socket _clientSocket) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         try {
             DataInputStream clientSocketIn = new DataInputStream(new BufferedInputStream(_clientSocket.getInputStream()));
             headers = new HashMap<>();
+            receivedTime = System.currentTimeMillis();
 
             getSetStartLine(clientSocketIn);
             getSetHeaders(clientSocketIn);
             getSetBody(clientSocketIn);
+            getSetAuthorization();
         } catch (BadRequestException | IOException | ArrayIndexOutOfBoundsException ex) {
             System.err.println("Bad Request: " + ex.getMessage());
             uri = "/";
@@ -92,6 +100,18 @@ public class Request {
         }
     }
 
+    private void getSetAuthorization() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        if (headers.containsKey("Authorization")) {
+            String[] authValue = headers.get("Authorization").split(" ");
+            //String authType = authValue[0].trim();
+            String authEncoded = authValue[1].trim();
+            String[] userNamePass = Htpassword.getUserNamePass(authEncoded);
+
+            userName = userNamePass[0];
+            userPass = userNamePass[1];
+        }
+    }
+
     public Map<String, String> getHeaders() {
         return headers;
     }
@@ -122,6 +142,18 @@ public class Request {
 
     public boolean hasQueryString() {
         return (queryString != null);
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getUserPass() {
+        return userPass;
+    }
+
+    public long getReceivedTime() {
+        return receivedTime;
     }
 
 }
