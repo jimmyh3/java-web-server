@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import main.javaserver.Logs;
 import main.javaserver.confreaders.HttpdConf;
 import main.javaserver.confreaders.MimeTypes;
 import main.javaserver.httpmessages.Request;
@@ -27,13 +28,15 @@ public class WebClient implements Runnable {
     private HttpdConf httpdConf;
     private MimeTypes mimeTypes;
     private boolean isRunning;
+    private Logs logs;
 
-    public WebClient(int _id, Socket _clientSocket, HttpdConf _httpdConf, MimeTypes _mimeTypes) {
+    public WebClient(int _id, Socket _clientSocket, HttpdConf _httpdConf, MimeTypes _mimeTypes) throws IOException {
         id = _id;
         clientSocket = _clientSocket;
         httpdConf = _httpdConf;
         mimeTypes = _mimeTypes;
         isRunning = true;
+        logs = new Logs(httpdConf.getLogFile());
     }
  
     /**
@@ -51,8 +54,10 @@ public class WebClient implements Runnable {
                 Request request = new Request(clientSocket);
                 Resource resource = new Resource(request.getURI(), httpdConf);
                 Response response = ResponseFactory.getResponse(request, resource, httpdConf, mimeTypes);
-    
+                
                 response.send(clientSocket.getOutputStream());
+                logs.write(clientSocket.getRemoteSocketAddress().toString(), "", request.getUserName(), request.getReceivedTime(),
+                                                        request.getVerb(), request.getURI(), request.getHttpVersion(), response.getCode(), response.getBody().length);
             } catch (FileNotFoundException ex) {
                 System.err.println(ex.getMessage());    
             } catch (IOException ex) {
