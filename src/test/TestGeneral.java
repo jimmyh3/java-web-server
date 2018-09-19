@@ -19,6 +19,7 @@ import java.util.TimeZone;
 import java.lang.ProcessBuilder;
 import java.lang.Process;
 
+import main.javaserver.Logs;
 import main.javaserver.confreaders.HttpdConf;
 import main.javaserver.httpmessages.Resource;
 import main.javaserver.httpmessages.Response;
@@ -26,6 +27,11 @@ import main.javaserver.httpmessages.request_executors.RequestExecutor;
 import main.javaserver.httpmessages.request_executors.RequestExecutorGET;
 
 public class TestGeneral {
+
+    public void testLogs(String outputFilePath) throws IOException {
+        Logs logs = new Logs(outputFilePath);
+        logs.write("128.0.0.1", "", "jimmyh3", System.currentTimeMillis(), "GET", "/public_html/index.html", "HTTP/1.1", 200, 0);
+    }
 
     public void testProcessBuilder() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder("perl", "C:/Users/jimmy/Documents/Programming Development/java-web-server/src/public_html/cgi-bin/perl_env");
@@ -108,7 +114,8 @@ public class TestGeneral {
         //System.out.println(RequestExecutor.requestExecutors.get("GET").toString());
         //System.out.println("Testing Date Format: " + DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));
         //testGeneral.testCreateFile();
-        testGeneral.testProcessBuilder();
+        //testGeneral.testProcessBuilder();
+        testGeneral.testLogs("C:/Users/jimmy/Documents/Programming Development/java-web-server/src/main/javaserver/logs/logs.txt");
     }
 
 }
