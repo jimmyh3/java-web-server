@@ -50,8 +50,6 @@ public abstract class RequestExecutor {
             response = getUnauthorizedResponse(response, resource);
         } else if (doesResourceExist(resource)) {
             response = getNotFoundResponse(response);
-        } else if (isResourceAScript(resource)) {
-            response = handleScriptExecution(response, request, resource, mimeTypes);
         } else {
             response = serve(response, request, resource, mimeTypes);
         }
@@ -79,10 +77,6 @@ public abstract class RequestExecutor {
         initializedResponse.addHeaderValue("WWW-Authenticate", String.format("%s realm=\"%s\"", htaccess.getAuthType(), htaccess.getAuthName()));
 
         return initializedResponse;
-    }
-
-    private boolean isResourceAScript(Resource resource) {
-        return resource.isScript();
     }
 
     private boolean isAuthRequired(Resource resource) {
@@ -120,7 +114,7 @@ public abstract class RequestExecutor {
         return response;
     }
 
-    private Response handleScriptExecution(Response response, Request request, Resource resource, MimeTypes mimeTypes) throws IOException { 
+    protected Response handleScriptExecution(Response response, Request request, Resource resource, MimeTypes mimeTypes) throws IOException { 
         if (resource.isScript()) {
             ProcessBuilder processBuilder = handleProcessBuilder(request, resource);
             Process process = processBuilder.start();

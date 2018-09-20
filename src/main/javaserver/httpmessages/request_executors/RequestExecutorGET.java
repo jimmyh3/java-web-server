@@ -15,13 +15,13 @@ import main.javaserver.httpmessages.Response;
 import main.javaserver.httpmessages.request_executors.RequestExecutor;
 
 public class RequestExecutorGET extends RequestExecutor {
-    
-    @Override
-    public Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException, ParseException {
-        Response response = initializedResponse;
 
+    private Response getContent(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException, ParseException {
+        Response response = initializedResponse;
         String requestModSinceStr = request.getHeader("If-Modified-Since");
         if (requestModSinceStr != null) {
+
+
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy hh:mm:ss z");
             simpleDateFormat.setTimeZone(TimeZone.getTimeZone("PST"));
             Date requestModSinceDate = simpleDateFormat.parse(requestModSinceStr);
@@ -41,6 +41,22 @@ public class RequestExecutorGET extends RequestExecutor {
             response.setCode(200);
             response.setReasonPhrase("OK");
             response = super.loadResourceContent(response, resource, mimeTypes);
+        }
+
+        return response;
+    }
+    
+    @Override
+    public Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException, ParseException {
+        Response response = initializedResponse;
+
+        if (resource.isScript()) {
+            response = super.handleScriptExecution(response, request, resource, mimeTypes);
+            response.setCode(200);
+            response.setReasonPhrase("OK");
+        } else {
+            // Handle 'If-Modified-Since' Http Header
+            response = getContent(response, request, resource, mimeTypes);
         }
 
         return response;
