@@ -97,11 +97,12 @@ public abstract class RequestExecutor {
 
     private boolean hasAuthAccess(Request request, Resource resource) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String[] authValue = request.getHeader("Authorization").split(" ");
+        String authType = authValue[0].trim();
         String authEncoded = authValue[1].trim();
         Htaccess accessFile = WebServer.getHtaccess(resource.getAccessFilePath());
         Htpassword htpassword = accessFile.getUserFile();
 
-        return htpassword.isAuthorized(authEncoded);
+        return htpassword.isAuthorized(authType, authEncoded);
     }
 
     private boolean doesResourceExist(Resource resource) {

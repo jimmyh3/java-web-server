@@ -103,9 +103,9 @@ public class Request {
     private void getSetAuthorization() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         if (headers.containsKey("Authorization")) {
             String[] authValue = headers.get("Authorization").split(" ");
-            //String authType = authValue[0].trim();
+            String authType = authValue[0].trim();
             String authEncoded = authValue[1].trim();
-            String[] userNamePass = Htpassword.getUserNamePass(authEncoded);
+            String[] userNamePass = Htpassword.getUserNamePass(authType, authEncoded);
 
             userName = userNamePass[0];
             userPass = userNamePass[1];

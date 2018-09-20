@@ -36,28 +36,28 @@ public class Htpassword extends ConfigurationReader {
         }
     }
 
-    public static String[] getUserNamePass(String userPassEncoded) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        // TODO: take in Authorization Type such as 'Basic', 'Bearer', etc. See mdn on Authorization.
+    public static String[] getUserNamePass(String authType, String userPassEncoded) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String[] userPassPair = null;
         
-        String userPassDecoded = new String(Base64.getDecoder().decode(userPassEncoded), "UTF-8");
-        String[] userPassPair = userPassDecoded.split(":");
-        String username = userPassPair[0].trim();
-        String password = userPassPair[1].trim();
-        userPassPair[0] = username;
-        userPassPair[1] = password;
+        if (authType.equals("Basic")) {
+            String userPassDecoded = new String(Base64.getDecoder().decode(userPassEncoded), "UTF-8");
+            userPassPair = userPassDecoded.split(":");
+            userPassPair[0] = userPassPair[0].trim();
+            userPassPair[1] = userPassPair[1].trim();
+        }
 
         return userPassPair;
     }
 
-    public boolean isAuthorized(String userPassEncoded) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String[] userPassPair = getUserNamePass(userPassEncoded);
+    public boolean isAuthorized(String authType, String userPassEncoded) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String[] userPassPair = getUserNamePass(authType, userPassEncoded);
         String username = userPassPair[0];
         String password = userPassPair[1];
 
-        return isAuthorized(username, password);
+        return isAuthorized(authType, username, password);
     }
 
-    public boolean isAuthorized(String username, String password) throws NoSuchAlgorithmException {
+    public boolean isAuthorized(String authType, String username, String password) throws NoSuchAlgorithmException {
         boolean isAuthorized = false;
 
         if (users.containsKey(username)) {
