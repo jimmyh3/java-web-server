@@ -119,6 +119,7 @@ public abstract class RequestExecutor {
             ProcessBuilder processBuilder = handleProcessBuilder(request, resource);
             Process process = processBuilder.start();
             response = handleScriptOutput(request, response, process);
+            process.destroy();
         }
 
         return response;
