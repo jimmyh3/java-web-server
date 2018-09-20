@@ -25,7 +25,7 @@ public class RequestExecutorHEAD extends RequestExecutor {
     }
 
     @Override
-    public Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException {
+    public Response serve(Response initializedResponse, Request request, Resource resource, MimeTypes mimeTypes) throws IOException, ParseException {
         Response response = initializedResponse;
         response = getResourceHeaders(response, request, resource, mimeTypes);
         
