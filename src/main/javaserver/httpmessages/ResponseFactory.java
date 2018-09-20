@@ -50,7 +50,8 @@ public class ResponseFactory {
         if (requestExecutor != null) {
             response = requestExecutor.execute(request, resource, mimeTypes);
         } else {
-            //TODO: Handle Not Implemented Response
+            response.setCode(501);
+            response.setReasonPhrase("Not Implemented");
         }
         
         return response;
