@@ -1,2 +1,6 @@
-# java-web-server
-This is a personal web server built using JAVA to better understand HTTP.
+# Introduction
+Java webserver built to serve HTTP requests.
+*Personally it is used for me to better understand webservers, HTTP, client-server model.*
+
+# Class Diagram
+![alt text] (https://github.com/jimmyh3/java-web-server/java-web-server-diagram.png "java-web-server-diagram")
